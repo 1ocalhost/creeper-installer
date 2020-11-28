@@ -1,6 +1,7 @@
 #pragma once
 #pragma comment(lib, "shlwapi.lib")
 #pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "comctl32.lib")
 
 #ifdef _UNICODE
 #if defined _M_IX86

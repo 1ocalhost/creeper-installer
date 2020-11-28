@@ -6,6 +6,7 @@
 #include <string>
 #include <fstream>
 #include "unzip.hpp"
+#include "wait.hpp"
 #include "linker.hpp"
 
 #define APP_NAME L"Creeper"
@@ -257,6 +258,26 @@ BOOL Unpack() {
 	return TRUE;
 }
 
+BOOL IsAnotherInstanceRunning() {
+	HANDLE mutex = CreateMutex(NULL, TRUE, APP_UID);
+	return mutex && GetLastError() == ERROR_ALREADY_EXISTS;
+}
+
+void UnpackRoutine() {
+	Unpack();
+}
+
+int HandleUnpack(HINSTANCE hInstance) {
+	if (IsAnotherInstanceRunning())
+		return 5;
+
+	PCWSTR question = L"Do you want to install " APP_NAME L" now?";
+	if (IDYES != MessageBox(NULL, question, APP_NAME, MB_YESNO))
+		return 2;
+
+	return StartWaiting(hInstance, &UnpackRoutine);
+}
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nShowCmd) {
 	int result = 0;
@@ -273,11 +294,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		result = saf.PushBackTo(newAttach, output) ? 0 : 3;
 	}
 	else {
-		PCWSTR question = L"Do you want to install " APP_NAME L" now?";
-		if (IDYES != MessageBox(NULL, question, APP_NAME, MB_YESNO))
-			result = 2;
-		else
-			result = Unpack() ? 0 : 1;
+		result = HandleUnpack(hInstance);
 	}
 
 	LocalFree(szArglist);

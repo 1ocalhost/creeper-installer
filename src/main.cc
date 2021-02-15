@@ -172,14 +172,14 @@ void KillOldProcesses(const PROCESSENTRY32& entry) {
 		return;
 
 	HANDLE hProcess = OpenProcess(
-		PROCESS_QUERY_INFORMATION | PROCESS_TERMINATE,
+		PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_TERMINATE,
 		FALSE, entry.th32ProcessID);
 
 	if (!hProcess)
 		return;
 
 	WCHAR filePath[MAX_PATH] = { 0 };
-	GetModuleFileNameEx(hProcess, NULL, filePath, MAX_PATH);
+	GetProcessImageFileName(hProcess, filePath, MAX_PATH);
 
 	if (wcsstr(filePath, APP_UID)) {
 		TerminateProcess(hProcess, 0);

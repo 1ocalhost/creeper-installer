@@ -1,12 +1,19 @@
 #pragma once
 #include <Shldisp.h>
 
+HWND g_topWindow = NULL;
+LPCWSTR g_msgBoxTitle = L"";
+
+inline int MsgBox(LPCWSTR text, _In_ UINT flags) {
+	return MessageBox(g_topWindow, text, g_msgBoxTitle, flags);
+}
+
 inline void ErrorMsg(PCWSTR format, ...) {
 	WCHAR text[1024] = { 0 };
 	va_list args;
 	va_start(args, format);
 	wvsprintf(text, format, args);
-	MessageBox(NULL, text, L"Error", MB_ICONERROR);
+	MessageBox(g_topWindow, text, L"Error", MB_ICONERROR);
 	va_end(args);
 }
 
@@ -139,7 +146,10 @@ inline BOOL CopyFolderItemsImpl(PCWSTR srcFolder, PCWSTR dstFolder) {
 }
 
 inline BOOL CopyFolderItems(PCWSTR srcFolder, PCWSTR dstFolder) {
-	CoInitialize(NULL);
+	HRESULT coResult = CoInitialize(NULL);
+	if (coResult != S_OK && coResult != S_FALSE)
+		return FALSE;
+
 	BOOL result = false;
 	__try {
 		result = CopyFolderItemsImpl(srcFolder, dstFolder);

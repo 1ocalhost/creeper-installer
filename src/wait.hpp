@@ -45,6 +45,8 @@ inline LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 }
 
 inline BOOL RegisterWindowClass(HINSTANCE hInstance) {
+	HICON icon = LoadIcon(hInstance, L"IDI_MAIN");
+
 	WNDCLASSEX wc = { 0 };
 	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.style = 0;
@@ -52,12 +54,12 @@ inline BOOL RegisterWindowClass(HINSTANCE hInstance) {
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = hInstance;
-	wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+	wc.hIcon = icon;
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 	wc.lpszMenuName = NULL;
 	wc.lpszClassName = g_szClassName;
-	wc.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+	wc.hIconSm = icon;
 	return RegisterClassEx(&wc);
 }
 
@@ -99,6 +101,7 @@ inline int StartWaiting(HINSTANCE hInstance, WaitingTaskRoutine task)
 		return 1;
 	}
 
+	g_topWindow = hwnd;
 	CreateThread(NULL, 0, WaitingTaskRoutineThread, hwnd, 0, NULL);
 	ShowWindow(hwnd, SW_SHOW);
 	UpdateWindow(hwnd);

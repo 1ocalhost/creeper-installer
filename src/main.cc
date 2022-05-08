@@ -449,7 +449,7 @@ void SelfExtractAndExec(Path tempPath, Path appPath, BOOL isUpgrade) {
 		python_dir / L"pythonw.exe", appPath / L"install.py");
 
 	if (result)
-		MsgBox(APP_NAME L"has been installed successfully!",
+		MsgBox(APP_NAME L" has been installed successfully!",
 			MB_ICONINFORMATION);
 }
 
